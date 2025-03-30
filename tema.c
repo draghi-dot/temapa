@@ -1,99 +1,99 @@
 #include <stdio.h>
 #include <string.h>
 
-void citireMatrice(FILE *fin, int linii, int coloane, char matrice[linii][coloane]) {
-    for (int i = 0; i < linii; i++) {
-        fgets(matrice[i], coloane, fin);
+// citirea matricii 
+void citireMatrice(FILE *fin, int linii, int coloane, char matrice[linii][coloane+1]){
+    for (int i = 0; i < linii; i++){
+        if (fgets(matrice[i], coloane+1, fin) != NULL){
+            size_t len = strlen(matrice[i]);
+            if (len > 0 && matrice[i][len-1] == '\n'){
+                matrice[i][len-1] = '\0';
+            } else{
+                int ch;
+                while ((ch = fgetc(fin)) != '\n' && ch != EOF); // golim restul liniei daca a fost trunchiata
+            }
+        }
     }
 }
 
-void afisareMatrice(FILE *fout, int linii, int coloane, char matrice[linii][coloane]) {
-    for (int i = 0; i < linii; i++) 
-        fprintf(fout, "%s", matrice[i]);  
+// afiseara matrucei
+void afisareMatrice(FILE *fout, int linii, int coloane, char matrice[linii][coloane+1]){
+    for (int i = 0; i < linii; i++)
+        fprintf(fout, "%s\n", matrice[i]);
+
+    fprintf(fout, "\n");
 }
 
-//functie de numarare a vecinilor vii
-int numaraVeciniVii(int i, int j, int linii, int coloane, char matrice[linii][coloane]) {
+// numara vecinii vii
+int numaraVeciniVii(int i, int j, int linii, int coloane, char matrice[linii][coloane+1]){
     int veciniVii = 0;
-
-    for (int i2 = -1; i2 <= 1; i2++) {
-        for (int j2 = -1; j2 <= 1; j2++) {
-            // ignoram celula curentă i2 = 0 si j2 = 0
+    for (int i2 = -1; i2 <= 1; i2++){
+        for (int j2 = -1; j2 <= 1; j2++){
             if (!(i2 == 0 && j2 == 0)) { 
                 int i3 = i + i2;
                 int j3 = j + j2;
-                
-                // verificam daca elementul este in matrice
-                if (i3 >= 0 && i3 < linii && j3 >= 0 && j3 < coloane) 
-                    if (matrice[i3][j3] == 'X') // dacă vecinul este viu
-                        veciniVii++;         
-            }
+
+                if (i3 >= 0 && i3 < linii && j3 >= 0 && j3 < coloane)
+                    if (matrice[i3][j3] == 'X')
+                    veciniVii++;
+            }   
         }
     }
     return veciniVii;
 }
 
-//testam fiecare celula si decidem daca ramane vie, moare sau devine vie bazat pe numarul de vecini vii
-void evoluareGeneratie(int linii, int coloane, char matrice[linii][coloane], char matriceNoua[linii][coloane]) {
-    for (int i = 0; i < linii; i++) {
-        for (int j = 0; j < coloane; j++) {
+// determinarea starii celulei cu ajutorul functiei numaravecinivii
+void evoluareGeneratie(int linii, int coloane, char matrice[linii][coloane+1], char matriceNoua[linii][coloane+1]){
+    for (int i = 0; i < linii; i++){
+        for (int j = 0; j < coloane; j++){
             int veciniVii = numaraVeciniVii(i, j, linii, coloane, matrice);
-            
-            if (matrice[i][j] == 'X')// celula este vie
-                if (veciniVii < 2 || veciniVii > 3) 
+            if (matrice[i][j] == 'X')  // celula este vie
+                if (veciniVii < 2 || veciniVii > 3)
                     matriceNoua[i][j] = '+'; // moare
-                 else 
+                else 
                     matriceNoua[i][j] = 'X'; // ramane vie
-                
-            else // celula este moartă
-                if (veciniVii == 3) 
-                    matriceNoua[i][j] = 'X'; // devine vie 
+            else  // celula este moarta
+                if (veciniVii == 3)
+                    matriceNoua[i][j] = 'X'; // devine vie
                 else 
                     matriceNoua[i][j] = '+'; // ramane moarta
         }
+        matriceNoua[i][coloane] = '\0';
     }
 }
 
-int main() {
-    FILE *fin = fopen("in/data1.in", "r"); 
-    FILE *fout = fopen("out/data1.out", "w");  
+int main(char const *argv[]) {
 
-    if (fin == NULL || fout == NULL) {
-        printf("Eroare la deschiderea fișierului.\n");
+    FILE *fin = fopen("in/data2.in", "rt"); 
+    FILE *fout = fopen("out/data2.out", "wt");  
+    
+
+    if (fin == NULL || fout == NULL){
+        printf("Eroare la deschiderea fisierului.\n");
         return 1;
     }
 
-    // citire nr task
-    int task;
+    // citim numar task, numarul linii, numarul coloane si numarul de generatii.
+    int task, linii, coloane, knrgen;
     fscanf(fin, "%d", &task);
-
-    // citire nr coloane linii
-    int linii, coloane;
     fscanf(fin, "%d", &linii);
     fscanf(fin, "%d", &coloane);
-
-    // citire nr generatii
-    int knrgen;
     fscanf(fin, "%d", &knrgen);
+    
+    char matrice[linii][coloane+1], matriceNoua[linii][coloane+1];
 
-    char matrice[linii][coloane], matriceNoua[linii][coloane];
-
-    // citire matricea initiala
+    //citire si afisare gen 0
     citireMatrice(fin, linii, coloane, matrice);
+    afisareMatrice(fout, linii, coloane, matrice);
 
-    // procesam generatiile
-    for (int k = 0; k < knrgen; k++) {
-        // afisare matrice curenta
-        afisareMatrice(fout, linii, coloane, matrice);
-
-        // genereaza matricea noua
+    // procesam fiecare generatie & o retinem si afisam
+    for (int k = 0; k < knrgen; k++){
         evoluareGeneratie(linii, coloane, matrice, matriceNoua);
 
-        // copiaza matricea noua in matrice pt urmatoarea generatie
-        for (int i = 0; i < linii; i++) 
-            for (int j = 0; j < coloane; j++) 
-                matrice[i][j] = matriceNoua[i][j];
-            
+        for (int i = 0; i < linii; i++)
+            strcpy(matrice[i], matriceNoua[i]);
+
+        afisareMatrice(fout, linii, coloane, matrice);
     }
 
     fclose(fin);
