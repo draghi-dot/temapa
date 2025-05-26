@@ -2,7 +2,7 @@
 #include <stdlib.h> 
 #include <string.h> 
 
-//includem headerele necesare pentru taskuri
+// includem headerele necesare pentru taskuri
 #include "fisier_comun.h" // fisier cu structuri si functii comune
 #include "fisier_task1.h"
 #include "fisier_task2.h"
@@ -68,7 +68,23 @@ int main(const int argc, char const *argv[]){
                 p_crt_t1 = p_urm_t1;
                 p_urm_t1 = temp_ptr_t1;
             }
-        }
+        }        # 1. Creează un branch nou, fără istorie (orphan branch)
+        git checkout --orphan new_main
+        
+        # 2. Adaugă toate fișierele din director în staging area
+        git add .
+        
+        # 3. Fă un commit nou cu mesajul formatat corect
+        git commit -m "feat: implementare completa Game of Life cu toate taskurile"
+        
+        # 4. Șterge branch-ul main vechi
+        git branch -D main
+        
+        # 5. Redenumește branch-ul temporar la main
+        git branch -m main
+        
+        # 6. Forțează push-ul la repository remote, suprascriind istoricul vechi
+        git push -f origin main
     }else if (task == 2){
           // task 2: calculeaza si afiseaza doar celulele care isi schimba starea in fiecare generatie
         executaTask2(fout, linii, coloane, knrgen, matrice_initiala);
