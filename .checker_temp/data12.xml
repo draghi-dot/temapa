@@ -12,8 +12,8 @@
   <line>Command: /mnt/c/Users/alexr/Desktop/temapa/a.out /mnt/c/Users/alexr/Desktop/temapa/in/data12.in /mnt/c/Users/alexr/Desktop/temapa/out/data12.out</line>
 </preamble>
 
-<pid>455</pid>
-<ppid>437</ppid>
+<pid>547</pid>
+<ppid>525</ppid>
 <tool>memcheck</tool>
 
 <args>
@@ -32,13 +32,13 @@
 
 <status>
   <state>RUNNING</state>
-  <time>00:00:00:00.148 </time>
+  <time>00:00:00:00.149 </time>
 </status>
 
 
 <status>
   <state>FINISHED</state>
-  <time>00:00:00:03.115 </time>
+  <time>00:00:00:02.538 </time>
 </status>
 
 <errorcounts>
