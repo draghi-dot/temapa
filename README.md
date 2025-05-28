@@ -160,5 +160,3 @@ Checker-ul poate fi rulat în mod interactiv folosind comanda:
 Checker-ul funcționează doar pe Linux.
 Dacă folosești Windows, poți utiliza WSL (Windows Subsystem for Linux) pentru a rula checker-ul.
 Dacă folosești macOS, poți utiliza Docker pentru a crea un mediu compatibil Linux.
-
-```

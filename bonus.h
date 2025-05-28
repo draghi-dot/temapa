@@ -10,25 +10,24 @@
 // pornind de la matricea 'urmatoare' si lista de 'modificari'
 // pentru a obtine matricea 'anterioara'.
 
-void aplicaModificariInvers(int linii, int coloane, char matrice_urmatoare[linii][coloane+1], Celula* modificari_directe, char matrice_anterioara[linii][coloane+1]) {
-    //copiem matricea urmatoare in cea anterioara
+void aplicaModificariInvers(int linii, int coloane, const char matrice_urmatoare[linii][coloane+1], Celula* modificari_directe, char matrice_anterioara[linii][coloane+1]) {
+    // copiem matricea urmatoare in cea anterioara
     for (int i = 0; i < linii; i++) 
         strcpy(matrice_anterioara[i], matrice_urmatoare[i]);
     
-    //aplicam modificarile in sens invers
+    // aplicam modificarile in sens invers
     Celula* celula = modificari_directe;
     while (celula != NULL) {
         int r = celula->linie;
         int c = celula->coloana;
         
         if (r >= 0 && r < linii && c >= 0 && c < coloane) {
-            //inversam starea celulei: vie -> moarta, moarta -> vie
+            // inversam starea celulei: vie -> moarta, moarta -> vie
             if (matrice_anterioara[r][c] == 'X')
                 matrice_anterioara[r][c] = '+';
             else 
                 matrice_anterioara[r][c] = 'X';
         }
-        
         celula = celula->urm;
     }
 }
@@ -43,6 +42,8 @@ void executaBonus(FILE* fout, int linii, int coloane, Celula** stiva_modificari_
 
     char matCurenta[linii][coloane+1];
     char matTemp[linii][coloane+1]; 
+    for (int i = 0; i < linii; i++)
+        matTemp[i][0] = '\0';
 
     for (int i = 0; i < linii; i++) 
         if (matrice_generatia_K[i] != NULL) 
@@ -64,7 +65,6 @@ void executaBonus(FILE* fout, int linii, int coloane, Celula** stiva_modificari_
         pCurenta = pAnterioara;
         pAnterioara = pAux;
 
-        // Afișăm matricea după fiecare pas de reconstrucție
         fprintf(fout, "\nMatricea reconstruita pentru gen %d:\n", idx);
         afisareMatrice(fout, linii, coloane, pCurenta);
     }
